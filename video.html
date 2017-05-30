@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Example of Embedding YouTube Video inside Bootstrap Modal</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+    .modal-content iframe{
+        margin: 0 auto;
+        display: block;
+    }
+</style>
+
+</head>
+<body>
+<div class="bs-example">
+    <!-- Button HTML (to Trigger Modal) -->
+    <a href="#myModal" class="btn btn-lg btn-primary" data-toggle="modal">Launch Demo Modal</a>
+    
+    <!-- Modal HTML -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&#120;</button>
+                    <h4 class="modal-title">YouTube Video</h4>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+/* Get iframe src attribute value i.e. YouTube video url
+and store it in a variable */
+
+function init() {
+  gapi.client.setApiKey("AIzaSyAvCogdycmKrNPdfuYPh1GTv9aJfkmoYLM");
+  gapi.client.load("youtube", "v3", function() {
+	  displayVideo();
+  });
+}
+function displayVideo() {
+	var request = gapi.client.youtube.search.list({
+      part: "snippet",
+      type: "video",
+      q: "dogs",
+      maxResult: 5
+    });
+    request.execute(function(response) {
+      var results = response.result;
+	  var index = 0;
+	  $.each(results.items, function(index, item) {
+		$(".modal-body").append('<iframe id="cartoonVideo" width="100%" height="100%" src="https://www.youtube.com/embed/'+item.id.videoId+'"></iframe>');
+		index++;
+		if(index == 1)
+			return false;
+	  });
+    });
+}
+</script>
+<script src="https://apis.google.com/js/client.js?onload=init"></script>
+<script>
+var url = $("#cartoonVideo").attr('src');
+
+/* Assign empty url value to the iframe src attribute when
+modal hide, which stop the video playing */
+$("#myModal").on('hide.bs.modal', function(){
+	$("#cartoonVideo").attr('src', $("#cartoonVideo").attr('src'));
+});
+
+/* Assign the initially stored url back to the iframe src
+attribute when modal is displayed again */
+$("#myModal").on('show.bs.modal', function(){
+	$("#cartoonVideo").attr('src', url);
+});
+</script>
+</body>
+</html>                                		
